@@ -1,0 +1,61 @@
+{% extends "orders/layout.html" %}
+{% load static %}
+{% load orders_tags %}
+
+<!-- menu_dict[category][item][size]['price'] -->
+
+{% block title %}
+    Menu
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.1.2/handlebars.min.js"></script>
+
+<script id="addcart-template" type="text/x-handlebars-template">
+    {% verbatim %}{{{selectforms}}}{% endverbatim %}
+    <button class="add" id="addtocartbutton">Add to Cart</button>   
+    <button class="cancel" id="cancelbutton">Cancel</button>
+</script>
+
+<script type="text/javascript" src="{% static 'orders/menuscripts.js' %}"></script>
+
+{% endblock %}
+
+{% block content %}
+<div style="margin: 0px 28%;">
+<div style="background-image: url('/static/pizza_bg_2.jpg'); " class="content">
+    <h3 style="text-align: center;">Menu</h3>
+    {% for category in menu_dict %}
+        <br>
+        <table align="center" class="menutable">
+            <tr>
+                <th>{{ category }}</th>
+                {% if menu_dict|hash:category|hash:'sizes'|length > 1 %}
+                    {% for size in menu_dict|hash:category|hash:'sizes' %}
+                        <th>{{ size }}</th>
+                    {% endfor %}
+                {% endif %}
+            </tr>
+            {% for item in menu_dict|hash:category %}
+                {% if item != 'sizes' %}
+                    <tr>
+                        <td>{{ item }}</td>
+                        {% for size in menu_dict|hash:category|hash:'sizes' %}
+                            <td>
+                                {% if menu_dict|hash:category|hash:item|hash:size|hash:'price' %}
+                                    <a href="#" class="nostyle menuitem" 
+                                        data-itemid="{{ menu_dict|hash:category|hash:item|hash:size|hash:'id' }}"
+                                        data-opts="{{ menu_dict|hash:category|hash:item|hash:size|hash:'option_num' }}">
+                                        {{ menu_dict|hash:category|hash:item|hash:size|hash:'price'|currency }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endif %}
+            {% endfor %} 
+        </table>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}
